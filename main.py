@@ -1,99 +1,197 @@
 import pygame
 from pygame.locals import *
 import sys
+import random
+import time
  
 pygame.init()
+vec = pygame.math.Vector2 #2 for two dimensional
  
-vec = pygame.math.Vector2 # 2d vector
-HEIGHT = 450 # window dims
-WIDTH = 400 # ""
-ACC = 0.5 # char acceleration
-FRIC = -0.12 # char friction
-FPS = 60 # fps limit
+HEIGHT = 450
+WIDTH = 400
+ACC = 0.5
+FRIC = -0.12
+FPS = 60
+ 
 FramePerSec = pygame.time.Clock()
  
-displaysurface = pygame.display.set_mode((WIDTH, HEIGHT)) # make a screen
-pygame.display.set_caption("Game") # set title
+displaysurface = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Game")
  
-class Player(pygame.sprite.Sprite): # player is a sprite
-    def __init__(self): # init player
-        super().__init__() # init player's sprite?
-        self.surf = pygame.Surface((30, 30)) # make the surface that we use to represent the player (that is 30*30px)
-        self.surf.fill((128,255,40)) # fill it in
-        self.rect = self.surf.get_rect() # make a rectangle hitbox for it too
+class Player(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__() 
+        #self.image = pygame.image.load("character.png")
+        self.surf = pygame.Surface((30, 30))
+        self.surf.fill((255,255,0))
+        self.rect = self.surf.get_rect()
    
-        self.pos = vec((10, 385)) # position as a vector - don't know entirely why tho
-        self.vel = vec(0,0) # velocity as a vector
-        self.acc = vec(0,0) # acceleration as a vector
+        self.pos = vec((10, 360))
+        self.vel = vec(0,0)
+        self.acc = vec(0,0)
+        self.jumping = False
+        self.score = 0 
  
     def move(self):
-        self.acc = vec(0,0.5) # starting point for acceleration - no x and down 0.5 for y (for gravity)
+        self.acc = vec(0,0.5)
     
-        pressed_keys = pygame.key.get_pressed() # get pressed keys           
-        if pressed_keys[K_LEFT]: # if left is pressed
-            self.acc.x = -ACC # x acceleration = -ACC (ACC being a constant)
-        if pressed_keys[K_RIGHT]: # if right is pressed
-            self.acc.x = ACC # x acceleration = ACC (make us accelerate to the right)
-             
-        self.acc.x += self.vel.x * FRIC # allow us to alow down or speed up depending on acceleration
-        self.vel += self.acc # add acceleration to velocity (duh that's how that works)
-        self.pos += self.vel + 0.5 * self.acc # voodoo bullshit
+        pressed_keys = pygame.key.get_pressed()
+                
+        if pressed_keys[K_LEFT]:
+            self.acc.x = -ACC
+        if pressed_keys[K_RIGHT]:
+            self.acc.x = ACC
+                 
+        self.acc.x += self.vel.x * FRIC
+        self.vel += self.acc
+        self.pos += self.vel + 0.5 * self.acc
          
-        if self.pos.x > WIDTH: # if we go past the edge tp to other side (portal)
-            self.pos.x = 0 # tp to other side
-        if self.pos.x < 0: # if we go through the left border off the map
-            self.pos.x = WIDTH # tp to otherside
-            
-        self.rect.midbottom = self.pos  # reference point for char = middle bottom of hitbox (for collisions)  
+        if self.pos.x > WIDTH:
+            self.pos.x = 0
+        if self.pos.x < 0:
+            self.pos.x = WIDTH
+             
+        self.rect.midbottom = self.pos
+ 
+    def jump(self): 
+        hits = pygame.sprite.spritecollide(self, platforms, False)
+        if hits and not self.jumping:
+           self.jumping = True
+           self.vel.y = -15
+ 
+    def cancel_jump(self):
+        if self.jumping:
+            if self.vel.y < -3:
+                self.vel.y = -3
+ 
+    def update(self):
+        hits = pygame.sprite.spritecollide(self ,platforms, False)
+        if self.vel.y > 0:        
+            if hits:
+                if self.pos.y < hits[0].rect.bottom:
+                    if hits[0].point == True:   
+                        hits[0].point = False   
+                        self.score += 1          
+                    self.pos.y = hits[0].rect.top +1
+                    self.vel.y = 0
+                    self.jumping = False
+ 
+ 
+class platform(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.surf = pygame.Surface((random.randint(50,100), 12))
+        self.surf.fill((0,255,0))
+        self.rect = self.surf.get_rect(center = (random.randint(0,WIDTH-10),
+                                                 random.randint(0, HEIGHT-30)))
+        self.speed = random.randint(-1, 1)
+        
+        self.point = True   
+        self.moving = True
+        
     
-    def update(self): #update to make sure we not sad
-        hits = pygame.sprite.spritecollide(P1 ,platforms, False) # get collisions
-        if P1.vel.y > 0: # if we're moving
-            if hits: # and there's any hits
-                self.vel.y = 0 # then stop us
-                self.pos.y = hits[0].rect.top + 1 # and move us to the top of the platform
-     
-    def jump(self): # jump 
-        hits = pygame.sprite.spritecollide(self, platforms, False) # return platforms we're touching
-        if hits: # if there are any, then we can jump
-           self.vel.y = -15 # jump with 15u of beans
+    def move(self):
+        if self.moving == True:  
+            self.rect.move_ip(self.speed,0)
+            if self.speed > 0 and self.rect.left > WIDTH:
+                self.rect.right = 0
+            if self.speed < 0 and self.rect.right < 0:
+                self.rect.left = WIDTH
  
-class platform(pygame.sprite.Sprite): # platforms are sprites
-    def __init__(self): # make a platform
-        super().__init__() # make the sprite to make the platform
-        self.surf = pygame.Surface((WIDTH, 20)) # a platform is a surface
-        self.surf.fill((255,0,0)) # fill it
-        self.rect = self.surf.get_rect(center = (WIDTH/2, HEIGHT - 10)) # move it to a pos for testing
-    
-    def move(self): # placeholder to deal with scrolling
-        pass
+ 
+def check(platform, groupies):
+    if pygame.sprite.spritecollideany(platform,groupies):
+        return True
+    else:
+        for entity in groupies:
+            if entity == platform:
+                continue
+            if (abs(platform.rect.top - entity.rect.bottom) < 40) and (abs(platform.rect.bottom - entity.rect.top) < 40):
+                return True
+        C = False
+ 
+def plat_gen():
+    while len(platforms) < 6:
+        width = random.randrange(50,100)
+        p  = platform()      
+        C = True
+         
+        while C:
+             p = platform()
+             p.rect.center = (random.randrange(0, WIDTH - width),
+                              random.randrange(-50, 0))
+             C = check(p, platforms)
+        platforms.add(p)
+        all_sprites.add(p)
+ 
+ 
+        
+PT1 = platform()
+P1 = Player()
+ 
+PT1.surf = pygame.Surface((WIDTH, 20))
+PT1.surf.fill((255,0,0))
+PT1.rect = PT1.surf.get_rect(center = (WIDTH/2, HEIGHT - 10))
+ 
+all_sprites = pygame.sprite.Group()
+all_sprites.add(PT1)
+all_sprites.add(P1)
+ 
+platforms = pygame.sprite.Group()
+platforms.add(PT1)
 
-PT1 = platform() # pt1 is a plat
-P1 = Player() # player is a player
+PT1.moving = False
+PT1.point = False   ##
  
-platforms = pygame.sprite.Group() # make a group called platforms
-platforms.add(PT1) # add test platform to it
-
-all_sprites = pygame.sprite.Group() # make a group for our stuff
-all_sprites.add(PT1) # add plat to it
-all_sprites.add(P1) # add player to it
+for x in range(random.randint(4,5)):
+    C = True
+    pl = platform()
+    while C:
+        pl = platform()
+        C = check(pl, platforms)
+    platforms.add(pl)
+    all_sprites.add(pl)
  
-while True: # game loop
-    for event in pygame.event.get(): # window exit logic
+ 
+while True:
+    P1.update()
+    for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == pygame.KEYDOWN:    # if the player is pressing a key
-            if event.key == pygame.K_SPACE: # is it space?
-                P1.jump() # call the jump method
-    
+        if event.type == pygame.KEYDOWN:    
+            if event.key == pygame.K_SPACE:
+                P1.jump()
+        if event.type == pygame.KEYUP:    
+            if event.key == pygame.K_SPACE:
+                P1.cancel_jump()
 
-    displaysurface.fill((0,0,0)) # make the screen
-    P1.update() # update the player for this frame
-
-    for entity in all_sprites: # for all things
-        displaysurface.blit(entity.surf, entity.rect) # draw them
-        entity.move() # move the entity (if it can atm)
-    
-    pygame.display.update() # update the display
-    FramePerSec.tick(FPS) # tick at ratelimit
+    if P1.rect.top > HEIGHT:
+        for entity in all_sprites:
+            entity.kill()
+            time.sleep(1)
+            displaysurface.fill((255,0,0))
+            pygame.display.update()
+            time.sleep(1)
+            pygame.quit()
+            sys.exit()
+ 
+    if P1.rect.top <= HEIGHT / 3:
+        P1.pos.y += abs(P1.vel.y)
+        for plat in platforms:
+            plat.rect.y += abs(P1.vel.y)
+            if plat.rect.top >= HEIGHT:
+                plat.kill()
+ 
+    plat_gen()
+    displaysurface.fill((0,0,0))
+    f = pygame.font.SysFont("Verdana", 20)     
+    g  = f.render(str(P1.score), True, (123,255,0))   
+    displaysurface.blit(g, (WIDTH/2, 10))   
+     
+    for entity in all_sprites:
+        displaysurface.blit(entity.surf, entity.rect)
+        entity.move()
+ 
+    pygame.display.update()
+    FramePerSec.tick(FPS)
