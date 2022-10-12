@@ -9,9 +9,9 @@ vec = pygame.math.Vector2 #2 for two dimensional
  
 HEIGHT = 450
 WIDTH = 900
-ACC = 0.5
+ACC = 0.3
 FRIC = -0.12
-FPS = 60
+FPS = 120
  
 FramePerSec = pygame.time.Clock()
  
@@ -33,7 +33,7 @@ class Player(pygame.sprite.Sprite):
         self.score = 0 
  
     def move(self):
-        self.acc = vec(0,0.5)
+        self.acc = vec(0,0.2)
     
         pressed_keys = pygame.key.get_pressed()
                 
@@ -57,7 +57,7 @@ class Player(pygame.sprite.Sprite):
         hits = pygame.sprite.spritecollide(self, platforms, False)
         if hits and not self.jumping:
            self.jumping = True
-           self.vel.y = -15
+           self.vel.y = -10
  
     def cancel_jump(self):
         if self.jumping:
@@ -83,7 +83,7 @@ class platform(pygame.sprite.Sprite): ## rand gen ok
         self.surf = pygame.Surface((random.randint(50,100), 12))
         self.surf.fill((0,255,0))
         self.rect = self.surf.get_rect(center = (random.randint(spawnbox.left, WIDTH-10),
-                                                 random.randint(spawnbox.top, spawnbox.bottom - 20))) 
+                                                 random.randint(spawnbox.top+120, spawnbox.bottom - 120))) 
         self.point = True
     
     def move(self):
@@ -97,7 +97,7 @@ def check(platform, groupies): ## and fix checking
         for entity in groupies:
             if entity == platform:
                 continue
-            if (abs(platform.rect.top - entity.rect.bottom) < 100) and (abs(platform.rect.bottom - entity.rect.top) < 100) and (abs(platform.rect.right - entity.rect.left) < 150) and (abs(platform.rect.left - entity.rect.right) < 150):
+            if (abs(platform.rect.top - entity.rect.bottom) < 100) or (abs(platform.rect.bottom - entity.rect.top) < 100) or (abs(platform.rect.right - entity.rect.left) < 150) or (abs(platform.rect.left - entity.rect.right) < 150):
                 return False
         C = False
  
@@ -115,7 +115,7 @@ def plat_gen(): ## fix generation using spawnbox
         platforms.add(p)
         all_sprites.add(p)
  
-spawnbox = Rect(4*WIDTH//5, 100, WIDTH//3, 350) # make sure there are two platforms in here at all times
+spawnbox = Rect(3*WIDTH//4, 100, WIDTH//4, 350) # make sure there are n platforms in here at all times
         
 PT1 = platform() # spawn plat
 P1 = Player()
@@ -145,23 +145,20 @@ for x in range(random.randint(1,2)):
  
 while True:
     ##
-    print(platforms)
-    for plat in platforms:
-        print(plat.rect.center)
     P1.update()
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:    
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_UP:
                 P1.jump()
         if event.type == pygame.KEYUP:    
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_UP:
                 P1.cancel_jump()
  
-    if P1.rect.right >= 2 * WIDTH / 3 : ## need to be changed for horizontal/ has been changed
-        distover = P1.rect.right - 2 * WIDTH / 3
+    if P1.rect.right >= WIDTH / 2 : ## need to be changed for horizontal/ has been changed
+        distover = P1.rect.right - WIDTH / 2
         P1.pos.x -= distover #abs(P1.vel.x) better idea find distance over, then move back, and move the plats back by same amount
         for plat in platforms: ##
             plat.rect.x -= distover ##
