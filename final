@@ -1,4 +1,5 @@
 ## add the ability to get a spare life, that is used when you fall into the void and yeets you back up again - square is yellow without a life and purple with one
+## spare life spent when touch tile and not used
 
 import pygame
 from pygame.locals import *
@@ -14,6 +15,7 @@ WIDTH = 900
 ACC = 0.3
 FRIC = -0.12
 FPS = 120
+
  
 FramePerSec = pygame.time.Clock()
  
@@ -75,10 +77,12 @@ class Player(pygame.sprite.Sprite):
                     if hits[0].point == True:   
                         hits[0].point = False   
                         self.score += 1
-                        if hits[0].special == True:
-                            hits[0].special = False
-                            #hits[0]. need to change color of platform once used 
-                            self.safe = True          
+                    if hits[0].special == True:
+                            if self.safe == False:
+                                print('special tile triggered')
+                                hits[0].special = False
+                                hits[0].surf.fill((0,255,0))
+                                self.safe = True          
                     self.pos.y = hits[0].rect.top +1
                     self.vel.y = 0
                     self.jumping = False
@@ -93,8 +97,8 @@ class platform(pygame.sprite.Sprite): ## rand gen ok
     def __init__(self):
         super().__init__()
         self.special = False
-        self.surf = pygame.Surface((random.randint(50,100), 12))
-        if random.randint(1,P1.score+10) == 1: # special tile
+        self.surf = pygame.Surface((random.randint(50,100), 20))
+        if random.randint(1,P1.score//2+10) == 1: # special tile
             self.surf.fill((255,0,255))
             self.special = True
         else:
@@ -167,12 +171,13 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == pygame.KEYDOWN:    
-            if event.key == pygame.K_UP:
-                P1.jump()
+            
         if event.type == pygame.KEYUP:    
             if event.key == pygame.K_UP:
                 P1.cancel_jump()
+    
+    if pygame.key.get_pressed()[pygame.K_UP] == True:
+            P1.jump()
  
     if P1.rect.right >= WIDTH / 2 : ## need to be changed for horizontal/ has been changed
         distover = P1.rect.right - WIDTH / 2
