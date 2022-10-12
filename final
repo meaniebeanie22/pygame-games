@@ -57,7 +57,7 @@ class Player(pygame.sprite.Sprite):
         hits = pygame.sprite.spritecollide(self, platforms, False)
         if hits and not self.jumping:
            self.jumping = True
-           self.vel.y = -17
+           self.vel.y = -15
  
     def cancel_jump(self):
         if self.jumping:
@@ -92,7 +92,7 @@ class platform(pygame.sprite.Sprite):
         pass
  
  
-def check(platform, groupies):
+def check(platform, groupies): ## and fix checking
     if pygame.sprite.spritecollideany(platform,groupies):
         return True
     else:
@@ -103,7 +103,7 @@ def check(platform, groupies):
                 return True
         C = False
  
-def plat_gen():
+def plat_gen(): ## fix generation
     while len(platforms) < 6:
         width = random.randrange(50,100)
         p  = platform()      
@@ -158,14 +158,15 @@ while True:
             if event.key == pygame.K_SPACE:
                 P1.cancel_jump()
  
-    if P1.rect.top <= HEIGHT / 3:
-        P1.pos.y += abs(P1.vel.y)
-        for plat in platforms:
-            plat.rect.y += abs(P1.vel.y)
-            if plat.rect.top >= HEIGHT:
-                plat.kill()
-    if P1.rect.top > HEIGHT:
-        print('fail')
+    if P1.rect.right >= 2 * WIDTH / 3 : ## need to be changed for horizontal/ has been changed
+        distover = P1.rect.right - 2 * WIDTH / 3
+        P1.pos.x -= distover #abs(P1.vel.x) better idea find distance over, then move back, and move the plats back by same amount
+        for plat in platforms: ##
+            plat.rect.x -= distover ##
+            if plat.rect.right <= 0: ##
+                plat.kill() ##
+    if P1.rect.top > HEIGHT: ## GOOD DON'T CHANGE!!!
+        print('fail') ## beans
  
     plat_gen()
     displaysurface.fill((0,0,0))
