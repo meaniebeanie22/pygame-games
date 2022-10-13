@@ -92,7 +92,7 @@ class platform(pygame.sprite.Sprite): ## rand gen ok
     def __init__(self):
         super().__init__()
         self.special = False
-        self.surf = pygame.Surface((random.randint(100,200), 20))
+        self.surf = pygame.Surface((random.randint(100,200), 25))
         if random.randint(1,P1.score//2+10) == 1: # special tile
             self.surf.fill((255,0,255))
             self.special = True
