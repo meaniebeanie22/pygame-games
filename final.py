@@ -12,7 +12,6 @@ vec = pygame.math.Vector2 #2 for two dimensional
  
 HEIGHT = 500
 WIDTH = 1080
-ACC = 0.37
 FRIC = -0.12
 FPS = 120
 
@@ -41,11 +40,7 @@ class Player(pygame.sprite.Sprite):
         self.acc = vec(0,0.2)
     
         pressed_keys = pygame.key.get_pressed()
-                
-        if pressed_keys[K_LEFT]:
-            self.acc.x = -ACC
-        if pressed_keys[K_RIGHT]:
-            self.acc.x = ACC
+        self.acc.x = ACC
                  
         self.acc.x += self.vel.x * FRIC
         self.vel += self.acc
@@ -53,9 +48,7 @@ class Player(pygame.sprite.Sprite):
          
         if self.pos.x > WIDTH:
             self.pos.x = WIDTH
-        if self.pos.x < 0:
-            self.pos.x = 0
-             
+
         self.rect.midbottom = self.pos
  
     def jump(self): 
@@ -91,6 +84,7 @@ class Player(pygame.sprite.Sprite):
             self.surf.fill((255,255,0))
  
 P1 = Player()
+ACC = 1.1 ** P1.score / 10 + 0.3
 
 class platform(pygame.sprite.Sprite): ## rand gen ok
     def __init__(self):
