@@ -129,13 +129,13 @@ def plat_gen(): ## fix generation using spawnbox
          
         while C:
              p = platform()
-             p.rect.center = (random.randrange(spawnbox.left + 150, WIDTH - width),
+             p.rect.center = (random.randrange(spawnbox.left + 135, WIDTH - width),
                               random.randrange(spawnbox.top, spawnbox.bottom - 20))
              C = check(p, platforms)
         platforms.add(p)
         all_sprites.add(p)
  
-spawnbox = Rect(3*WIDTH//4, 100, WIDTH//4, HEIGHT-100) # make sure there are n platforms in here at all times
+spawnbox = Rect(4*WIDTH//5, 150, WIDTH//4, HEIGHT-100) # make sure there are n platforms in here at all times
         
 PT1 = platform() # spawn plat
 PT1.special = False
