@@ -10,9 +10,9 @@ import time
 pygame.init()
 vec = pygame.math.Vector2 #2 for two dimensional
  
-HEIGHT = 450
-WIDTH = 900
-ACC = 0.3
+HEIGHT = 500
+WIDTH = 1080
+ACC = 0.35
 FRIC = -0.12
 FPS = 120
 
@@ -135,7 +135,7 @@ def plat_gen(): ## fix generation using spawnbox
         platforms.add(p)
         all_sprites.add(p)
  
-spawnbox = Rect(3*WIDTH//4, 100, WIDTH//4, 350) # make sure there are n platforms in here at all times
+spawnbox = Rect(3*WIDTH//4, 100, WIDTH//4, HEIGHT-100) # make sure there are n platforms in here at all times
         
 PT1 = platform() # spawn plat
 PT1.special = False
