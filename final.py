@@ -12,7 +12,7 @@ vec = pygame.math.Vector2 #2 for two dimensional
  
 HEIGHT = 500
 WIDTH = 1080
-ACC = 0.35
+ACC = 0.37
 FRIC = -0.12
 FPS = 120
 
@@ -62,7 +62,7 @@ class Player(pygame.sprite.Sprite):
         hits = pygame.sprite.spritecollide(self, platforms, False)
         if hits and not self.jumping:
            self.jumping = True
-           self.vel.y = -11
+           self.vel.y = -12
  
     def cancel_jump(self):
         if self.jumping:
@@ -96,7 +96,7 @@ class platform(pygame.sprite.Sprite): ## rand gen ok
     def __init__(self):
         super().__init__()
         self.special = False
-        self.surf = pygame.Surface((random.randint(50,100), 20))
+        self.surf = pygame.Surface((random.randint(100,200), 20))
         if random.randint(1,P1.score//2+10) == 1: # special tile
             self.surf.fill((255,0,255))
             self.special = True
