@@ -40,6 +40,8 @@ class Player(pygame.sprite.Sprite):
         self.acc = vec(0,0.2)
     
         pressed_keys = pygame.key.get_pressed()
+        if pressed_keys[pygame.K_DOWN] == True:
+            self.acc.y += 0.6
         self.acc.x = ACC
                  
         self.acc.x += self.vel.x * FRIC
