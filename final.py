@@ -79,7 +79,6 @@ class Player(pygame.sprite.Sprite):
                         self.score += 1
                     if hits[0].special == True:
                             if self.safe == False:
-                                print('special tile triggered')
                                 hits[0].special = False
                                 hits[0].surf.fill((0,255,0))
                                 self.safe = True          
@@ -139,7 +138,7 @@ def plat_gen(): ## fix generation using spawnbox
 spawnbox = Rect(3*WIDTH//4, 100, WIDTH//4, 350) # make sure there are n platforms in here at all times
         
 PT1 = platform() # spawn plat
-
+PT1.special = False
  
 PT1.surf = pygame.Surface((WIDTH, 20))
 PT1.surf.fill((255,0,0))
@@ -189,6 +188,7 @@ while True:
 
     if P1.rect.top > HEIGHT: ## GOOD DON'T CHANGE!!!
         if P1.safe == True:
+            P1.pos.y = HEIGHT - 1
             P1.vel.y = -11
             P1.safe = False
         else:
