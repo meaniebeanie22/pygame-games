@@ -1,6 +1,3 @@
-from curses.ascii import SP
-from msilib.schema import Directory
-from turtle import width
 import pygame
 from pygame.locals import *
 import sys
