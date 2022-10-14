@@ -12,7 +12,6 @@ vec = pygame.math.Vector2 #2 for two dimensional
  
 HEIGHT = 500
 WIDTH = 1080
-ACC = 0.35
 FRIC = -0.12
 FPS = 120
 
@@ -41,11 +40,9 @@ class Player(pygame.sprite.Sprite):
         self.acc = vec(0,0.2)
     
         pressed_keys = pygame.key.get_pressed()
-                
-        if pressed_keys[K_LEFT]:
-            self.acc.x = -ACC
-        if pressed_keys[K_RIGHT]:
-            self.acc.x = ACC
+        if pressed_keys[pygame.K_DOWN] == True:
+            self.acc.y += 0.6
+        self.acc.x = ACC
                  
         self.acc.x += self.vel.x * FRIC
         self.vel += self.acc
@@ -53,16 +50,14 @@ class Player(pygame.sprite.Sprite):
          
         if self.pos.x > WIDTH:
             self.pos.x = WIDTH
-        if self.pos.x < 0:
-            self.pos.x = 0
-             
+
         self.rect.midbottom = self.pos
  
     def jump(self): 
         hits = pygame.sprite.spritecollide(self, platforms, False)
         if hits and not self.jumping:
            self.jumping = True
-           self.vel.y = -11
+           self.vel.y = -12
  
     def cancel_jump(self):
         if self.jumping:
@@ -91,12 +86,13 @@ class Player(pygame.sprite.Sprite):
             self.surf.fill((255,255,0))
  
 P1 = Player()
+ACC = 1.1 ** P1.score / 10 + 0.3
 
 class platform(pygame.sprite.Sprite): ## rand gen ok
     def __init__(self):
         super().__init__()
         self.special = False
-        self.surf = pygame.Surface((random.randint(50,100), 20))
+        self.surf = pygame.Surface((random.randint(100,200), 25))
         if random.randint(1,P1.score//2+10) == 1: # special tile
             self.surf.fill((255,0,255))
             self.special = True
@@ -129,13 +125,13 @@ def plat_gen(): ## fix generation using spawnbox
          
         while C:
              p = platform()
-             p.rect.center = (random.randrange(spawnbox.left + 135, WIDTH - width),
+             p.rect.center = (random.randrange(spawnbox.left + 150, WIDTH - width),
                               random.randrange(spawnbox.top, spawnbox.bottom - 20))
              C = check(p, platforms)
         platforms.add(p)
         all_sprites.add(p)
  
-spawnbox = Rect(4*WIDTH//5, 150, WIDTH//4, HEIGHT-100) # make sure there are n platforms in here at all times
+spawnbox = Rect(3*WIDTH//4, 100, WIDTH//4, HEIGHT-100) # make sure there are n platforms in here at all times
         
 PT1 = platform() # spawn plat
 PT1.special = False
