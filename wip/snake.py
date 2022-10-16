@@ -9,8 +9,8 @@ vec = pygame.math.Vector2 #2 for two dimensional
 
 HEIGHT = 500
 WIDTH = 500
-FPS = 120
-SPEED = 2
+FPS = 15
+SPEED = 10
 APPLES = 2 
 
 FramePerSec = pygame.time.Clock()
@@ -21,13 +21,14 @@ pygame.display.set_caption("An Abomination of Snake")
 class Player(pygame.sprite.Sprite):
     def __init__(self): ## 
         super().__init__()
-        self.surf = pygame.surface((10,10))
+        self.surf = pygame.Surface((10,10))
         self.surf.fill((0,255,0))
         self.rect = self.surf.get_rect()
         self.pos = vec(WIDTH//2, HEIGHT//2)
         self.score = 1
         self.direction = 'up'
         all_sprites.add(self)
+        self.cells = [self.pos]
         
 
 
@@ -52,6 +53,12 @@ class Player(pygame.sprite.Sprite):
             self.pos.x -= SPEED
         
         self.rect.center = self.pos
+        self.cells.append(self.pos)
+
+        # deal with cells
+        self.cells.insert(0, self.pos)
+        if len(self.cells) > self.score:
+            self.cells.pop(-1)
 
 
     def update(self):
@@ -60,17 +67,18 @@ class Player(pygame.sprite.Sprite):
             for apple in hits:
                 self.score += 1
                 apple.kill()
+        
 
 
 class Apple(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.surf = pygame.surface((5,5))
+        self.surf = pygame.Surface((10, 10))
         self.surf.fill((255,0,0))
         self.rect = self.surf.get_rect(center = (random.randint(10, WIDTH-10), random.randint(10, HEIGHT-10)))
         all_sprites.add(self)
     
-    def move():
+    def move(self):
         pass
 
 all_sprites = pygame.sprite.Group()
@@ -95,7 +103,15 @@ while True:
     displaysurface.blit(g, (WIDTH/2, 10)) 
 
     for entity in all_sprites:
-        displaysurface.blit(entity.surf, entity.rect)
+        if type(entity) == 'Player':
+            for cell in entity.cells:
+                surf = entity.surf
+                rec = surf.get_rect()
+                rec.center = cell
+                displaysurface.blit(surf, rec)
+        else:
+            displaysurface.blit(entity.surf, entity.rect)
+        
         entity.move()
  
     pygame.display.update()
