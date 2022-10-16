@@ -54,7 +54,7 @@ class Player(pygame.sprite.Sprite):
 
 
     def update(self):
-        
+        pass
 
 
 class Apple(pygame.sprite.Sprite):
