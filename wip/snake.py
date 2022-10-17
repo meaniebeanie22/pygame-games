@@ -7,8 +7,8 @@ import time
 pygame.init()
 vec = pygame.math.Vector2 #2 for two dimensional
 
-HEIGHT = 500
-WIDTH = 500
+HEIGHT = 400
+WIDTH = 400
 FPS = 15
 SPEED = 10
 APPLES = 2 
@@ -58,7 +58,7 @@ class Player(pygame.sprite.Sprite):
         # deal with cells
         self.cells.insert(0, self.pos)
         if len(self.cells) > self.score:
-            self.cells.pop(-1)
+            self.cells.pop()
 
 
     def update(self):
@@ -75,7 +75,7 @@ class Apple(pygame.sprite.Sprite):
         super().__init__()
         self.surf = pygame.Surface((10, 10))
         self.surf.fill((255,0,0))
-        self.rect = self.surf.get_rect(center = (random.randint(10, WIDTH-10), random.randint(10, HEIGHT-10)))
+        self.rect = self.surf.get_rect(center = (round(random.randint(10, WIDTH-10), -1), round(random.randint(10, HEIGHT-10), -1)))
         all_sprites.add(self)
     
     def move(self):
@@ -94,8 +94,11 @@ while True:
     P1.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
-    
     apple_gen()
+
+    if P1.pos.x > WIDTH or P1.pos.y > HEIGHT or P1.pos.x < 0 or P1.pos.y < 0:
+        print('failure, score =', P1.score)
+        break
 
     displaysurface.fill((0,0,0))
     f = pygame.font.SysFont("Verdana", 20)     
@@ -103,16 +106,17 @@ while True:
     displaysurface.blit(g, (WIDTH/2, 10)) 
 
     for entity in all_sprites:
-        if type(entity) == 'Player':
+        if isinstance(entity, Player):
             for cell in entity.cells:
-                surf = entity.surf
-                rec = surf.get_rect()
+                sur = pygame.Surface((10,10))
+                sur.fill((0,255,0))
+                rec = sur.get_rect()
                 rec.center = cell
-                displaysurface.blit(surf, rec)
+                displaysurface.blit(sur, rec)
         else:
             displaysurface.blit(entity.surf, entity.rect)
         
         entity.move()
- 
+    
     pygame.display.update()
     FramePerSec.tick(FPS)
