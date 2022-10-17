@@ -7,8 +7,8 @@ import time
 pygame.init()
 vec = pygame.math.Vector2 #2 for two dimensional
 
-HEIGHT = 400
-WIDTH = 400
+HEIGHT = 500
+WIDTH = 500
 FPS = 15
 SPEED = 10
 APPLES = 2 
@@ -53,14 +53,12 @@ class Player(pygame.sprite.Sprite):
             self.pos.x -= SPEED
         
         self.rect.center = self.pos
-        self.cells.append(self.pos)
 
         # deal with cells
         self.cells.insert(0, self.pos)
-        if len(self.cells) > self.score:
+        while len(self.cells) > self.score:
             self.cells.pop()
-
-
+            
     def update(self):
         hits = pygame.sprite.spritecollide(self, apples, False)
         if hits:
@@ -101,22 +99,25 @@ while True:
         break
 
     displaysurface.fill((0,0,0))
-    f = pygame.font.SysFont("Verdana", 20)     
-    g  = f.render(str(P1.score), True, (123,255,0))   
-    displaysurface.blit(g, (WIDTH/2, 10)) 
 
     for entity in all_sprites:
         if isinstance(entity, Player):
+            print(entity.cells)
             for cell in entity.cells:
                 sur = pygame.Surface((10,10))
                 sur.fill((0,255,0))
                 rec = sur.get_rect()
                 rec.center = cell
+                print(rec)
                 displaysurface.blit(sur, rec)
         else:
             displaysurface.blit(entity.surf, entity.rect)
         
         entity.move()
-    
+        
+    f = pygame.font.SysFont("Verdana", 20)     
+    g  = f.render(str(P1.score), True, (123,255,0))   
+    displaysurface.blit(g, (WIDTH/2, 10)) 
+
     pygame.display.update()
     FramePerSec.tick(FPS)
