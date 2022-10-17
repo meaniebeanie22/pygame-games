@@ -28,20 +28,24 @@ class Player(pygame.sprite.Sprite):
         self.score = 1
         self.direction = 'up'
         all_sprites.add(self)
-        self.cells = [self.pos]
+        self.cells = []
         
 
 
     def move(self): ## 
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_UP]:
-            self.direction = 'up'
+            if self.direction != 'down':
+                self.direction = 'up'
         elif pressed_keys[K_RIGHT]:
-            self.direction = 'right'
+            if self.direction != 'left':
+                self.direction = 'right'
         elif pressed_keys[K_DOWN]:
-            self.direction = 'down'
+            if self.direction != 'up':
+                self.direction = 'down'
         elif pressed_keys[K_LEFT]:
-            self.direction = 'left'
+            if self.direction != 'right':
+                self.direction = 'left'
 
         if self.direction == 'up':
             self.pos.y -= SPEED
@@ -52,12 +56,12 @@ class Player(pygame.sprite.Sprite):
         elif self.direction == 'left':
             self.pos.x -= SPEED
         
-        self.rect.center = self.pos
-
+        self.rect.topleft = self.pos
+        print('pos =', self.pos)
         # deal with cells
-        self.cells.insert(0, self.pos)
-        while len(self.cells) > self.score:
-            self.cells.pop()
+        self.cells.insert(0, vec(self.pos)) ## these three lines are no longer fricked - was apparently inserting a vector id that can change, not the data itself
+        while len(self.cells) > self.score + 2:
+            bob = self.cells.pop()
             
     def update(self):
         hits = pygame.sprite.spritecollide(self, apples, False)
@@ -73,7 +77,7 @@ class Apple(pygame.sprite.Sprite):
         super().__init__()
         self.surf = pygame.Surface((10, 10))
         self.surf.fill((255,0,0))
-        self.rect = self.surf.get_rect(center = (round(random.randint(10, WIDTH-10), -1), round(random.randint(10, HEIGHT-10), -1)))
+        self.rect = self.surf.get_rect(topleft = (round(random.randint(10, WIDTH-10), -1), round(random.randint(10, HEIGHT-10), -1)))
         all_sprites.add(self)
     
     def move(self):
@@ -97,6 +101,9 @@ while True:
     if P1.pos.x > WIDTH or P1.pos.y > HEIGHT or P1.pos.x < 0 or P1.pos.y < 0:
         print('failure, score =', P1.score)
         break
+    elif P1.pos in P1.cells[1:]:
+        print('failure, score =', P1.score)
+        break
 
     displaysurface.fill((0,0,0))
 
@@ -107,8 +114,7 @@ while True:
                 sur = pygame.Surface((10,10))
                 sur.fill((0,255,0))
                 rec = sur.get_rect()
-                rec.center = cell
-                print(rec)
+                rec.topleft = cell
                 displaysurface.blit(sur, rec)
         else:
             displaysurface.blit(entity.surf, entity.rect)
