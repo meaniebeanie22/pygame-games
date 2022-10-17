@@ -7,10 +7,10 @@ import time
 pygame.init()
 vec = pygame.math.Vector2 #2 for two dimensional
 
-HEIGHT = 500
-WIDTH = 500
-FPS = 15
-SPEED = 10
+HEIGHT = 400
+WIDTH = 400
+FPS = 7
+SPEED = 20
 APPLES = 2 
 
 FramePerSec = pygame.time.Clock()
@@ -21,7 +21,7 @@ pygame.display.set_caption("An Abomination of Snake")
 class Player(pygame.sprite.Sprite):
     def __init__(self): ## 
         super().__init__()
-        self.surf = pygame.Surface((10,10))
+        self.surf = pygame.Surface((20,20))
         self.surf.fill((0,255,0))
         self.rect = self.surf.get_rect()
         self.pos = vec(WIDTH//2, HEIGHT//2)
@@ -57,7 +57,6 @@ class Player(pygame.sprite.Sprite):
             self.pos.x -= SPEED
         
         self.rect.topleft = self.pos
-        print('pos =', self.pos)
         # deal with cells
         self.cells.insert(0, vec(self.pos)) ## these three lines are no longer fricked - was apparently inserting a vector id that can change, not the data itself
         while len(self.cells) > self.score + 2:
@@ -75,9 +74,13 @@ class Player(pygame.sprite.Sprite):
 class Apple(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.surf = pygame.Surface((10, 10))
+        self.surf = pygame.Surface((20, 20))
         self.surf.fill((255,0,0))
-        self.rect = self.surf.get_rect(topleft = (round(random.randint(10, WIDTH-10), -1), round(random.randint(10, HEIGHT-10), -1)))
+        apx = round(random.randint(10, WIDTH-10), -1)
+        apy = round(random.randint(10, HEIGHT-10), -1)
+        apx -= apx % 20
+        apy -= apy % 20
+        self.rect = self.surf.get_rect(topleft = (apx, apy))
         all_sprites.add(self)
     
     def move(self):
@@ -109,9 +112,8 @@ while True:
 
     for entity in all_sprites:
         if isinstance(entity, Player):
-            print(entity.cells)
             for cell in entity.cells:
-                sur = pygame.Surface((10,10))
+                sur = pygame.Surface((20,20))
                 sur.fill((0,255,0))
                 rec = sur.get_rect()
                 rec.topleft = cell
