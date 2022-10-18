@@ -59,7 +59,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.topleft = self.pos
         # deal with cells
         self.cells.insert(0, vec(self.pos)) ## these three lines are no longer fricked - was apparently inserting a vector id that can change, not the data itself
-        while len(self.cells) > self.score + 2:
+        while len(self.cells) > self.score + 3:
             bob = self.cells.pop()
             
     def update(self):
@@ -106,9 +106,18 @@ while True:
         if event.type == pygame.QUIT: sys.exit()
     apple_gen()
 
-    if P1.pos.x > WIDTH or P1.pos.y > HEIGHT or P1.pos.x < 0 or P1.pos.y < 0:
-        print('failure, score =', P1.score)
-        break
+    if P1.pos.x > WIDTH:
+        P1.pos.x = 0
+        
+    if P1.pos.y > HEIGHT:
+        P1.pos.y = 0
+
+    if P1.pos.x < 0:
+        P1.pos.x = WIDTH
+
+    if P1.pos.y < 0:
+        P1.pos.y = HEIGHT
+
     elif P1.pos in P1.cells[1:]:
         print('failure, score =', P1.score)
         break
