@@ -7,8 +7,8 @@ import time
 pygame.init()
 vec = pygame.math.Vector2 #2 for two dimensional
 
-HEIGHT = 400
-WIDTH = 400
+HEIGHT = 600
+WIDTH = 600
 FPS = 7
 SPEED = 20
 APPLES = 2 
@@ -76,10 +76,15 @@ class Apple(pygame.sprite.Sprite):
         super().__init__()
         self.surf = pygame.Surface((20, 20))
         self.surf.fill((255,0,0))
-        apx = round(random.randint(10, WIDTH-10), -1)
-        apy = round(random.randint(10, HEIGHT-10), -1)
-        apx -= apx % 20
-        apy -= apy % 20
+        C = True
+        while C:
+            apx = round(random.randint(10, WIDTH-10), -1)
+            apy = round(random.randint(10, HEIGHT-10), -1)
+            apx -= apx % 20
+            apy -= apy % 20
+            if not(vec(apx,apy) in P1.cells):
+                C = False
+                
         self.rect = self.surf.get_rect(topleft = (apx, apy))
         all_sprites.add(self)
     
@@ -122,7 +127,8 @@ while True:
             displaysurface.blit(entity.surf, entity.rect)
         
         entity.move()
-        
+    FPS = round(7 + P1.score ** (1/2), 1)
+
     f = pygame.font.SysFont("Verdana", 20)     
     g  = f.render(str(P1.score), True, (123,255,0))   
     displaysurface.blit(g, (WIDTH/2, 10)) 
