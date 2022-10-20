@@ -102,14 +102,15 @@ P1 = Player()
 
 while True:
     P1.update()
+    print('pos:', P1.pos)
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
     apple_gen()
 
-    if P1.pos.x > WIDTH:
+    if P1.pos.x >= WIDTH:
         P1.pos.x = 0
         
-    if P1.pos.y > HEIGHT:
+    if P1.pos.y >= HEIGHT:
         P1.pos.y = 0
 
     if P1.pos.x < 0:
