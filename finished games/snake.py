@@ -9,7 +9,7 @@ vec = pygame.math.Vector2 #2 for two dimensional
 
 HEIGHT = 600
 WIDTH = 600
-FPS = 7
+FPS = 12
 SPEED = 20
 APPLES = 2 
 
@@ -100,25 +100,28 @@ P1 = Player()
 
 while True:
     P1.update()
-    print('pos:', P1.pos)
     events = pygame.event.get()
     for event in events:
         if event.type == pygame.QUIT: sys.exit()
     apple_gen()
 
     if P1.pos.x >= WIDTH:
-        P1.pos.x = 0
+        print('failure, score =', P1.score)
+        break
         
     if P1.pos.y >= HEIGHT:
-        P1.pos.y = 0
+        print('failure, score =', P1.score)
+        break
 
     if P1.pos.x < 0:
-        P1.pos.x = WIDTH
+        print('failure, score =', P1.score)
+        break
 
     if P1.pos.y < 0:
-        P1.pos.y = HEIGHT
+        print('failure, score =', P1.score)
+        break
 
-    elif P1.pos in P1.cells[1:]:
+    if P1.pos in P1.cells[1:]:
         print('failure, score =', P1.score)
         break
 
@@ -136,7 +139,6 @@ while True:
             displaysurface.blit(entity.surf, entity.rect)
         
         entity.move(events)
-    FPS = round(7 + P1.score ** (1/2), 1)
 
     f = pygame.font.SysFont("Verdana", 20)     
     g  = f.render(str(P1.score), True, (123,255,0))   
