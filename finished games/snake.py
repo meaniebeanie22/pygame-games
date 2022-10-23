@@ -32,20 +32,18 @@ class Player(pygame.sprite.Sprite):
         
 
 
-    def move(self): ## 
-        pressed_keys = pygame.key.get_pressed()
-        if pressed_keys[K_UP]:
-            if self.direction != 'down':
-                self.direction = 'up'
-        elif pressed_keys[K_RIGHT]:
-            if self.direction != 'left':
-                self.direction = 'right'
-        elif pressed_keys[K_DOWN]:
-            if self.direction != 'up':
-                self.direction = 'down'
-        elif pressed_keys[K_LEFT]:
-            if self.direction != 'right':
-                self.direction = 'left'
+    def move(self, events): ## 
+        c_dir = self.direction
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == K_UP and c_dir != 'down':
+                    self.direction = 'up'
+                if event.key == K_RIGHT and c_dir != 'left':
+                    self.direction = 'right'
+                if event.key == K_DOWN and c_dir != 'up':
+                    self.direction = 'down'
+                if event.key == K_LEFT and c_dir != 'right':
+                    self.direction = 'left'
 
         if self.direction == 'up':
             self.pos.y -= SPEED
@@ -88,7 +86,7 @@ class Apple(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(topleft = (apx, apy))
         all_sprites.add(self)
     
-    def move(self):
+    def move(self, events):
         pass
 
 all_sprites = pygame.sprite.Group()
@@ -103,7 +101,8 @@ P1 = Player()
 while True:
     P1.update()
     print('pos:', P1.pos)
-    for event in pygame.event.get():
+    events = pygame.event.get()
+    for event in events:
         if event.type == pygame.QUIT: sys.exit()
     apple_gen()
 
@@ -136,7 +135,7 @@ while True:
         else:
             displaysurface.blit(entity.surf, entity.rect)
         
-        entity.move()
+        entity.move(events)
     FPS = round(7 + P1.score ** (1/2), 1)
 
     f = pygame.font.SysFont("Verdana", 20)     
