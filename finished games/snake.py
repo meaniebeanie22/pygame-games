@@ -9,7 +9,7 @@ vec = pygame.math.Vector2 #2 for two dimensional
 
 HEIGHT = 600
 WIDTH = 600
-FPS = 12
+FPS = 10
 SPEED = 20
 APPLES = 2 
 
@@ -33,35 +33,37 @@ class Player(pygame.sprite.Sprite):
 
 
     def move(self, events): ## 
-        c_dir = self.direction
+        keys = [self.direction]
         for event in events:
             if event.type == pygame.KEYDOWN:
-                if event.key == K_UP and c_dir != 'down':
-                    self.direction = 'up'
-                if event.key == K_RIGHT and c_dir != 'left':
-                    self.direction = 'right'
-                if event.key == K_DOWN and c_dir != 'up':
-                    self.direction = 'down'
-                if event.key == K_LEFT and c_dir != 'right':
-                    self.direction = 'left'
+                if event.key == K_UP and keys[0] != 'down':
+                    keys.append('up')
+                if event.key == K_RIGHT and keys[0] != 'left':
+                    keys.append('right')
+                if event.key == K_DOWN and keys[0] != 'up':
+                    keys.append('down')
+                if event.key == K_LEFT and keys[0] != 'right':
+                    keys.append('left')
 
-        if self.direction == 'up':
-            self.pos.y -= SPEED
-        elif self.direction == 'right':
-            self.pos.x += SPEED
-        elif self.direction == 'down':
-            self.pos.y += SPEED
-        elif self.direction == 'left':
-            self.pos.x -= SPEED
-        
-        self.rect.topleft = self.pos
-        # deal with cells
-        self.cells.insert(0, vec(self.pos)) ## these three lines are no longer fricked - was apparently inserting a vector id that can change, not the data itself
+        for key in keys:
+            if key == 'up':
+                self.pos.y -= SPEED
+            elif key == 'right':
+                self.pos.x += SPEED
+            elif key == 'down':
+                self.pos.y += SPEED
+            elif key == 'left':
+                self.pos.x -= SPEED
+            self.cells.insert(0, vec(self.pos))
+
+        self.direction = keys[-1]
         while len(self.cells) > self.score + 3:
             bob = self.cells.pop()
-            
+        
+
     def update(self):
         hits = pygame.sprite.spritecollide(self, apples, False)
+        print(hits)
         if hits:
             for apple in hits:
                 self.score += 1
